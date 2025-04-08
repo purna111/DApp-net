@@ -1,0 +1,18 @@
+<p>server-error works!</p>
+@if (error) {
+    <h4 class="text-danger">Error: {{error.message}}</h4>
+    <p class="font-weight-bold">Note: if you're seeing this error angular is not to blame!</p>
+    <p>what to do next?</p>
+    <ol>
+        <li>open chrome dev tools check the failing request in the network tab</li>
+        <li>examine the url of the failing request</li>
+        <li> reproduce the error in postman- if you reproduce the error Angular is not to blame</li>
+    </ol>
+    <p class="font-weight-bold"> following is the stack trace - check the first two lines this
+        tells you exactly which line of code caused the problem!
+    </p>
+
+    <code class="mt-5" style="background-color: whitesmoke;">
+        {{error.details}}
+    </code>
+}
