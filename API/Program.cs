@@ -1,5 +1,7 @@
+using API.Data;
 using API.Extensions;
 using API.Middleware;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,5 +48,25 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//  writing code to populate the database if it does not have any when starting of our application
+// it will dispose off once its done, to access a service outside of DI
+using var scope = app.Services.CreateScope();  
+
+var services = scope.ServiceProvider;
+//  to create and apply migrations
+try
+{
+    var context = services.GetRequiredService<DataContext>();
+    // if you need to apply migrations 
+    await context.Database.MigrateAsync();
+
+    await Seed.SeedUsers(context);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex,"an error occured during migration");
+}
 
 app.Run();

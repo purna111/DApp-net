@@ -24,6 +24,11 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<ITokenService, TokenService>();
 
+        services.AddScoped<IUserRepository,UserRepository>();
+
+            // check our api assemblyand regisster all of the profiles
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
         return services;
     }
 
