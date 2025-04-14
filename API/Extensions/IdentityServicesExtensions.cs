@@ -13,7 +13,7 @@ public static class IdentityServicesExtensions
     {
 
 
-
+            //  it is to authenticate the jwt
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
