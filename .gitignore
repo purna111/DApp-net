@@ -8,6 +8,8 @@
 
 # dotenv files
 .env
+# ignore only appsettings in API
+/API/appsettings.json
 
 # User-specific files
 *.rsuser
