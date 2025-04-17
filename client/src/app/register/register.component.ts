@@ -1,49 +1,82 @@
-import { Component,  inject,  input,  output,   } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component,  inject,  input,  OnInit,  output,   } from '@angular/core';
+import { AbstractControl, FormBuilder,  FormGroup,  ReactiveFormsModule, Validators } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
-import { ToastrService } from 'ngx-toastr';
 import { HttpErrorResponse } from '@angular/common/http';
+import { JsonPipe } from '@angular/common';
+import { TextInputComponent } from '../_forms/text-input/text-input.component';
+import { DatePickerComponent } from '../_forms/date-picker/date-picker.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule],
+  imports: [ReactiveFormsModule,TextInputComponent,DatePickerComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit{
 
   private accountService = inject(AccountService);
-    private toastr = inject(ToastrService);
-  
+    private fb = inject(FormBuilder);
+    private router = inject(Router);
+    registerForm : FormGroup = new FormGroup({});  
 
   // @Input() usersFromHomeComponent:any;    old way <17.3 
-
   // using signal gives compiler intellisense if not provided
   // usersFromHomeComponent = input.required<any>();
 
   // old way child to parent communication
-
   // @Output() cancelRegister = new EventEmitter();
   cancelRegister = output<boolean>();
+  maxDate = new Date();
+  validationErrors: string[] | undefined
 
+  ngOnInit(): void {
+      this.initializeForm();
+      this.maxDate.setFullYear(this.maxDate.getFullYear() - 18)
+  }
 
-  model: any= {}; 
+  initializeForm(){
+    this.registerForm = this.fb.group({
+      gender: ['male'],
+      username : ['', Validators.required],
+      knownAs: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],
+      city: ['', Validators.required],
+      country: ['', Validators.required],
+      password: ['',[Validators.required,Validators.minLength(4),
+        Validators.maxLength(8)
+      ]],
+      confirmPassword : ['',[Validators.required,this.matchValues('password')]]
+    });
+    // validators
+      this.registerForm.controls['password'].valueChanges.subscribe({
+        next: ()=> this.registerForm.controls['confirmPassword'].updateValueAndValidity()
+      })
+  }
+
+  matchValues(matchTo : string){
+    return (control: AbstractControl) =>{
+                      //  null is when the value is matched, isMatching is when not matched
+      return control.value === control.parent?.get(matchTo)?.value ? null : { isMatching : true};
+    }
+  }
 
   register(){
-    console.log( this.model );
-    this.accountService.register(this.model).subscribe({
+    const dob = this.getDateOnly(this.registerForm.get('dateOfBirth')?.value);
+    this.registerForm.patchValue({dateOfBirth: dob});
+    this.accountService.register(this.registerForm.value).subscribe({
       next: response =>{
-        console.log( response ); 
-        this.cancel();
+            this.router.navigateByUrl('/members');
       },
-      error: (error: HttpErrorResponse) => {
-              if (error.status === 0) {
-                this.toastr.error('Unable to connect to the server. Please try again later.', 'Network Error');
-              } else {
-                this.toastr.error(error.error?.message || 'An error occurred.', `Error ${error.status}`);
-              }
-            }
+      // error: (error: HttpErrorResponse) => {
+      //         if (error.status === 0) {
+      //           this.toastr.error('Unable to connect to the server. Please try again later.', 'Network Error');
+      //         } else {
+      //           this.toastr.error(error.error?.message || 'An error occurred.', `Error ${error.status}`);
+      //         }
+      //       } 
+      error: error => this.validationErrors= error
     })
   }
 
@@ -51,5 +84,10 @@ export class RegisterComponent {
   cancel(){
     console.log( "register cancelled" );
     this.cancelRegister.emit(false);
+  }
+
+  private getDateOnly(dob : string|undefined){
+    if(!dob) return;
+    return new Date(dob).toISOString().slice(0,10);
   }
 }
