@@ -15,6 +15,8 @@ export class AccountService {
 
   currentUser = signal<User | null>(null);
 
+  currentUserReadOnly = this.currentUser.asReadonly();
+
   // constructor() { }
 
   login(model : any){
