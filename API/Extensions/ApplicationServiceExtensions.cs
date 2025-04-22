@@ -29,6 +29,8 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<IPhotoService,PhotoService>();
 
+        services.AddScoped<ILikesRepository,LikesRepository>();
+
         services.AddScoped<LogUserActivity>();
 
             // check our api assembly and regisster all of the profiles
