@@ -9,6 +9,8 @@ public static class HttpExtentions
 
     public static void AddPaginationHeader<T> (this HttpResponse response, PagedList<T> data){
 
+        // PagedList<T>(items,count,pageNumber,pageSize);
+
         var paginationHeader = new PaginationHeader(data.CurrentPage,
                             data.PageSize, data.TotalCount, data.TotalPages);
 
