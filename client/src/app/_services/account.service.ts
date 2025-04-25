@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { User } from '../_models/user';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -15,6 +15,13 @@ export class AccountService {
   baseUrl = environment.apiUrl;
   currentUser = signal<User | null>(null);
   currentUserReadOnly = this.currentUser.asReadonly();
+  roles = computed(() => {
+    const user = this.currentUser();
+    if (user && user.token) {
+      return JSON.parse(atob(user.token.split('.')[1])).role
+    }
+    return [];
+  })
 
 
   // constructor() { }

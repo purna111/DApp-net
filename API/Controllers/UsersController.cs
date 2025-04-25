@@ -22,14 +22,13 @@ public class UsersController(IUserRepository userRepository,IMapper mapper,
 {
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUser([FromQuery] UserParams userParams)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
         userParams.CurrentUserName = User.GetUsername();
         var users = await userRepository.GetMembersAsync(userParams);
         Response.AddPaginationHeader(users);
         return Ok( users );
     }
-
 
     [HttpGet("{username}")]
     public async Task<ActionResult<MemberDto>> GetUser(string username)

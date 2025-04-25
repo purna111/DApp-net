@@ -38,7 +38,8 @@ export class MembersService {
   getMembers(){
     // const  userParams = this.userParams();
     console.log( this.userParams(), " userparams" );
-    const response = this.memberCache.get(Object.values(this.userParams()).join('-'));
+    // map key be like male-18-99-1-5-lastActive
+    const response = this.memberCache.get(Object.values(this.userParams()).join('-')); 
 
     // if (response) return this.setPaginatedResponse(response);
     if (response) return setPaginatedResponse(response,this.paginatedResult);
