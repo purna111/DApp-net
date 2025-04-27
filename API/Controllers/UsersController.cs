@@ -34,7 +34,10 @@ public class UsersController(IUnitOfWork unitOfWork,IMapper mapper,
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
 
-        var user = await unitOfWork.UserRepository.GetMemberByusernameAsync(username);
+        // var user = await unitOfWork.UserRepository.GetMemberByusernameAsync(username);
+         var currentUsername = User.GetUsername();
+        var user = await unitOfWork.UserRepository.GetMemberAsync(username, 
+            isCurrentUser: currentUsername == username);
         if (user == null) return NotFound();
         return user;
     }
@@ -92,7 +95,10 @@ public class UsersController(IUnitOfWork unitOfWork,IMapper mapper,
 
         if(user == null) return BadRequest(" couldnot find user");
 
-        var photo = user.Photos.FirstOrDefault(x=> x.Id == photoId);
+        // var photo = user.Photos.FirstOrDefault(x=> x.Id == photoId);
+
+        var photo = await unitOfWork.PhotoRepository.GetPhotoById(photoId);
+
 
         if(photo == null || photo.IsMain) return BadRequest("can not use this as main photo");
 

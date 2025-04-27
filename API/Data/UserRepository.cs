@@ -17,6 +17,18 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
                         .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
                         .SingleOrDefaultAsync();
     }
+    //photoapproved or not approved will be fetched on user is curent user or not 
+    public async Task<MemberDto?> GetMemberAsync(string username, bool isCurrentUser)
+    {
+        var query = context.Users
+            .Where(x => x.UserName == username)
+            .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
+            .AsQueryable();
+
+        if (isCurrentUser) query = query.IgnoreQueryFilters();
+
+        return await query.FirstOrDefaultAsync();
+    }
 
     public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
     {
@@ -54,6 +66,15 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
         return await context.Users
         .Include(x =>x.Photos)
         .SingleOrDefaultAsync(x => x.UserName == username);
+    }
+
+    public async Task<AppUser?> GetUserByPhotoId(int photoId)
+    {
+        return await context.Users
+            .Include(p => p.Photos)
+            .IgnoreQueryFilters()
+            .Where(p => p.Photos.Any(p => p.Id == photoId))
+            .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<AppUser>> GetUsersAsync()

@@ -34,6 +34,8 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<IMessageRepository,MessageRepository>();
 
+         services.AddScoped<IPhotoRepository, PhotoRepository>();
+
         services.AddScoped<IUnitOfWork,UnitOfWork>();
 
         services.AddScoped<LogUserActivity>();

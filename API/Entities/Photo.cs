@@ -14,6 +14,8 @@ public class Photo
 
     public string? PublicId { get; set; }
 
+    public bool IsApproved { get; set; } = false;
+
 
 //  both these are required one-to-many relationship
 // navigation properties
