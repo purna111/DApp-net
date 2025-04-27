@@ -75,7 +75,7 @@ public class MessageRepository (DataContext context,IMapper mapper): IMessageRep
 
     public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
     {
-         var messages = await context.Messages
+         var query =  context.Messages
             // .Include(x => x.Sender).ThenInclude(x => x.Photos)
             // .Include(x => x.Recipient).ThenInclude(x => x.Photos)
             .Where(x => 
@@ -87,10 +87,11 @@ public class MessageRepository (DataContext context,IMapper mapper): IMessageRep
                     && x.RecipientUsername == recipientUsername
             )
             .OrderBy(x => x.MessageSent)
-             .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+            //  .ProjectTo<MessageDto>(mapper.ConfigurationProvider) 
+            // .ToListAsync();
+            .AsQueryable();
 
-        var unreadMessages = messages.Where(x => x.DateRead == null && 
+        var unreadMessages = query.Where(x => x.DateRead == null && 
             x.RecipientUsername == currentUsername).ToList();
 
         if (unreadMessages.Count != 0)
@@ -98,8 +99,8 @@ public class MessageRepository (DataContext context,IMapper mapper): IMessageRep
             unreadMessages.ForEach(x => x.DateRead = DateTime.UtcNow);
             await context.SaveChangesAsync();
         }
-
-        return   messages;
+        //   return mapper.Map<IEnumerable<MessageDto>>(messages);
+        return   await query.ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToListAsync();
     }
     // message hub purpose
     public void RemoveConnection(Connection connection)
@@ -107,8 +108,8 @@ public class MessageRepository (DataContext context,IMapper mapper): IMessageRep
         context.Connections.Remove(connection);
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() >0;
-    }
+    // public async Task<bool> SaveAllAsync()
+    // {
+    //     return await context.SaveChangesAsync() >0;
+    // }
 }

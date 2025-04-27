@@ -34,6 +34,8 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<IMessageRepository,MessageRepository>();
 
+        services.AddScoped<IUnitOfWork,UnitOfWork>();
+
         services.AddScoped<LogUserActivity>();
 
             // check our api assembly and regisster all of the profiles
