@@ -50,9 +50,14 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/message");
+
+app.MapFallbackToController("Index", "Fallback");
 
 //  writing code to populate the database if it does not have any when starting of our application
 // it will dispose off once its done, to access a service outside of DI

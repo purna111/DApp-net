@@ -20,7 +20,8 @@ public static class ApplicationServiceExtensions
 
         services.AddDbContext<DataContext>(opt =>
         {
-            opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            opt.UseSqlServer(config.GetConnectionString("DefaultConnection"),
+             sqlOptions => sqlOptions.EnableRetryOnFailure());
         });
         services.AddCors();
 

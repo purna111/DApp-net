@@ -20,7 +20,9 @@ export class AccountService {
   roles = computed(() => {
     const user = this.currentUser();
     if (user && user.token) {
-      return JSON.parse(atob(user.token.split('.')[1])).role
+      // return JSON.parse(atob(user.token.split('.')[1])).role
+      const role = JSON.parse(atob(user.token.split('.')[1])).role;
+      return Array.isArray(role) ? role : [role];
     }
     return [];
   })
