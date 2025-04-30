@@ -19,7 +19,7 @@ export class MembersService {
   private accountService = inject(AccountService)
 
   baseUrl = environment.apiUrl;
-
+  
   paginatedResult = signal<PaginatedResult<Member[]> | null>(null);
   memberCache = new Map();
   user = this.accountService.currentUser();
